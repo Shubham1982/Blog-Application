@@ -11,6 +11,8 @@ import com.codewithdurgesh.blog.blogappapis.repositories.UserRepo;
 import com.codewithdurgesh.blog.blogappapis.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -49,8 +51,13 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(PostDto postDto, Integer postId) {
-        return null;
+    public PostDto updatePost(PostDto postDto, Integer postId) {
+        Post post = postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "Post Id", postId));
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
+        post.setImageName(post.getImageName());
+        Post updatedPost = postRepo.save(post);
+        return modelMapper.map(updatedPost,PostDto.class);
     }
 
     @Override
@@ -60,10 +67,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getAllPost() {
-        List<Post> allPosts = postRepo.findAll();
-        List<PostDto> postDtos = allPosts.stream().map((post) -> modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
-        return postDtos;
+    public Page<PostDto> getAllPost(Pageable pageable) {
+        Page<PostDto> allPosts = postRepo.findAll(pageable).map((post) -> modelMapper.map(post, PostDto.class));
+        return allPosts;
     }
 
     @Override

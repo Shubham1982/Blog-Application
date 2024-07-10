@@ -2,6 +2,8 @@ package com.codewithdurgesh.blog.blogappapis.services;
 
 import com.codewithdurgesh.blog.blogappapis.entities.Post;
 import com.codewithdurgesh.blog.blogappapis.payloads.PostDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -10,13 +12,13 @@ public interface PostService {
     //create
     PostDto createPost(PostDto postDto, Integer userId, Integer categoryId);
     //update
-    Post updatePost (PostDto postDto, Integer postId);
+    PostDto updatePost (PostDto postDto, Integer postId);
 
     //delete
     void deletePost(Integer postId);
 
     //get all posts
-    List<PostDto> getAllPost();
+    Page<PostDto> getAllPost(Pageable pageable);
 
     //get single post
     PostDto getPostById(Integer postId);
