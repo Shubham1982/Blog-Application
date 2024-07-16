@@ -5,6 +5,7 @@ import com.codewithdurgesh.blog.blogappapis.entities.Post;
 import com.codewithdurgesh.blog.blogappapis.entities.User;
 import com.codewithdurgesh.blog.blogappapis.exceptions.ResourceNotFoundException;
 import com.codewithdurgesh.blog.blogappapis.payloads.PostDto;
+import com.codewithdurgesh.blog.blogappapis.payloads.PostResponse;
 import com.codewithdurgesh.blog.blogappapis.repositories.CategoryRepo;
 import com.codewithdurgesh.blog.blogappapis.repositories.PostRepo;
 import com.codewithdurgesh.blog.blogappapis.repositories.UserRepo;
@@ -19,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -67,9 +69,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostDto> getAllPost(Pageable pageable) {
+    public PostResponse getAllPost(Pageable pageable) {
+        PostResponse postResponse = new PostResponse();
         Page<PostDto> allPosts = postRepo.findAll(pageable).map((post) -> modelMapper.map(post, PostDto.class));
-        return allPosts;
+        postResponse.setContent(allPosts.getContent());
+        postResponse.setPageSize(pageable.getPageSize());
+        postResponse.setPageNumber(pageable.getPageNumber());
+        postResponse.setTotalPages(allPosts.getTotalPages());
+        postResponse.setLastPage(allPosts.isLast());
+        postResponse.setTotalElements((int) allPosts.getTotalElements());
+
+        return postResponse;
     }
 
     @Override
@@ -95,7 +105,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> searchPosts(String keyword) {
-        return List.of();
+    public List<PostDto> searchPosts(String keyword) {
+        List<Post> posts = postRepo.findByTitleContaining(keyword);
+        List<PostDto> postDtoStream = posts.stream().map((post) -> modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+        return postDtoStream;
     }
 }

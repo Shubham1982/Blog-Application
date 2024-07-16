@@ -2,6 +2,7 @@ package com.codewithdurgesh.blog.blogappapis.controllers;
 
 import com.codewithdurgesh.blog.blogappapis.payloads.ApiResponse;
 import com.codewithdurgesh.blog.blogappapis.payloads.PostDto;
+import com.codewithdurgesh.blog.blogappapis.payloads.PostResponse;
 import com.codewithdurgesh.blog.blogappapis.services.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -45,9 +46,9 @@ public class PostController {
     }
     //get all posts
     @GetMapping("/posts")
-    public ResponseEntity<List<PostDto>> getAllPosts(Pageable pageable){
-        Page<PostDto> allPost = postService.getAllPost(pageable);
-        return new ResponseEntity<>(allPost.getContent(), HttpStatus.OK);
+    public ResponseEntity <PostResponse> getAllPosts(Pageable pageable){
+        PostResponse allPost = postService.getAllPost(pageable);
+        return new ResponseEntity<PostResponse>(allPost, HttpStatus.OK);
     }
     //get post details by id
     @GetMapping("/posts/{postId}")
@@ -66,5 +67,11 @@ public class PostController {
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable Integer postId){
         PostDto updatePost = postService.updatePost(postDto, postId);
         return new ResponseEntity<>(updatePost,HttpStatus.OK);
+    }
+    //search
+    @GetMapping("/posts/searchInTitle/{searchKey}")
+    public ResponseEntity<List<PostDto>> searchByKey(@PathVariable("searchKey") String searchKey){
+        List<PostDto> postDtos = postService.searchPosts(searchKey);
+        return new ResponseEntity<>(postDtos,HttpStatus.OK);
     }
 }

@@ -2,6 +2,7 @@ package com.codewithdurgesh.blog.blogappapis.services;
 
 import com.codewithdurgesh.blog.blogappapis.entities.Post;
 import com.codewithdurgesh.blog.blogappapis.payloads.PostDto;
+import com.codewithdurgesh.blog.blogappapis.payloads.PostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,7 +19,7 @@ public interface PostService {
     void deletePost(Integer postId);
 
     //get all posts
-    Page<PostDto> getAllPost(Pageable pageable);
+    PostResponse getAllPost(Pageable pageable);
 
     //get single post
     PostDto getPostById(Integer postId);
@@ -31,6 +32,6 @@ public interface PostService {
     List<PostDto> getPostsByUser(Integer userId);
 
     //search
-    List<Post> searchPosts (String keyword);
+    List<PostDto> searchPosts (String keyword);
 
 }
