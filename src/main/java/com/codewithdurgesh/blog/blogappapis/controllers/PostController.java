@@ -66,8 +66,8 @@ public class PostController {
     //get post details by id
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDto> getPostById(@PathVariable Integer postId){
-        PostDto post = postService.getPostById(postId);
-        return new ResponseEntity<>(post,HttpStatus.OK);
+        PostDto postDto = postService.getPostById(postId);
+        return new ResponseEntity<>(postDto,HttpStatus.OK);
     }
     //delete post by postId
     @DeleteMapping("/posts/{id}")

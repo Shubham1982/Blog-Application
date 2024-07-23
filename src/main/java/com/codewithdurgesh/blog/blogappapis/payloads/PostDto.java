@@ -1,9 +1,10 @@
 package com.codewithdurgesh.blog.blogappapis.payloads;
 
-import com.codewithdurgesh.blog.blogappapis.entities.User;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class PostDto {
@@ -15,4 +16,5 @@ public class PostDto {
     private Date addedDate;
     private CategoryDto category;
     private UserDto user;
+    private Set<CommentDto> comments = new HashSet<>();
 }
