@@ -5,20 +5,27 @@ import com.codewithdurgesh.blog.blogappapis.entities.Post;
 import com.codewithdurgesh.blog.blogappapis.entities.User;
 import com.codewithdurgesh.blog.blogappapis.exceptions.ResourceNotFoundException;
 import com.codewithdurgesh.blog.blogappapis.payloads.PostDto;
+import com.codewithdurgesh.blog.blogappapis.payloads.PostResponse;
 import com.codewithdurgesh.blog.blogappapis.repositories.CategoryRepo;
 import com.codewithdurgesh.blog.blogappapis.repositories.PostRepo;
 import com.codewithdurgesh.blog.blogappapis.repositories.UserRepo;
 import com.codewithdurgesh.blog.blogappapis.services.PostService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
+@Transactional
 public class PostServiceImpl implements PostService {
 
     @Autowired
@@ -49,23 +56,39 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post updatePost(PostDto postDto, Integer postId) {
-        return null;
+    public PostDto updatePost(PostDto postDto, Integer postId) {
+        Post post = postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "Post Id", postId));
+        post.setTitle(postDto.getTitle());
+        post.setContent(postDto.getContent());
+        post.setImageName(postDto.getImageName());
+        Post updatedPost = postRepo.save(post);
+        return modelMapper.map(updatedPost,PostDto.class);
     }
 
     @Override
     public void deletePost(Integer postId) {
-
+        Post post = postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "Post Id", postId));
+        postRepo.delete(post);
     }
 
     @Override
-    public List<Post> getAllPost() {
-        return List.of();
+    public PostResponse getAllPost(Pageable pageable) {
+        PostResponse postResponse = new PostResponse();
+        Page<PostDto> allPosts = postRepo.findAll(pageable).map((post) -> modelMapper.map(post, PostDto.class));
+        postResponse.setContent(allPosts.getContent());
+        postResponse.setPageSize(pageable.getPageSize());
+        postResponse.setPageNumber(pageable.getPageNumber());
+        postResponse.setTotalPages(allPosts.getTotalPages());
+        postResponse.setLastPage(allPosts.isLast());
+        postResponse.setTotalElements((int) allPosts.getTotalElements());
+
+        return postResponse;
     }
 
     @Override
-    public Post getPostById(Integer postId) {
-        return null;
+    public PostDto getPostById(Integer postId) {
+        Post post = postRepo.findById(postId).orElseThrow(() -> new ResourceNotFoundException("Post", "Post Id", postId));
+        return modelMapper.map(post, PostDto.class);
     }
 
     @Override
@@ -85,7 +108,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> searchPosts(String keyword) {
-        return List.of();
+    public List<PostDto> searchPosts(String keyword) {
+        List<Post> posts = postRepo.findByTitleContaining(keyword);
+        List<PostDto> postDtoStream = posts.stream().map((post) -> modelMapper.map(post, PostDto.class)).collect(Collectors.toList());
+        return postDtoStream;
     }
 }

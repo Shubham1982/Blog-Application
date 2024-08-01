@@ -2,6 +2,9 @@ package com.codewithdurgesh.blog.blogappapis.services;
 
 import com.codewithdurgesh.blog.blogappapis.entities.Post;
 import com.codewithdurgesh.blog.blogappapis.payloads.PostDto;
+import com.codewithdurgesh.blog.blogappapis.payloads.PostResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -10,16 +13,16 @@ public interface PostService {
     //create
     PostDto createPost(PostDto postDto, Integer userId, Integer categoryId);
     //update
-    Post updatePost (PostDto postDto, Integer postId);
+    PostDto updatePost (PostDto postDto, Integer postId);
 
     //delete
     void deletePost(Integer postId);
 
     //get all posts
-    List<Post> getAllPost();
+    PostResponse getAllPost(Pageable pageable);
 
     //get single post
-    Post getPostById(Integer postId);
+    PostDto getPostById(Integer postId);
 
     //get all posts by category
 
@@ -29,6 +32,6 @@ public interface PostService {
     List<PostDto> getPostsByUser(Integer userId);
 
     //search
-    List<Post> searchPosts (String keyword);
+    List<PostDto> searchPosts (String keyword);
 
 }

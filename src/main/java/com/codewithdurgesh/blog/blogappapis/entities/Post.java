@@ -3,7 +3,7 @@ package com.codewithdurgesh.blog.blogappapis.entities;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.util.*;
 
 @Entity
 @Table(name= "posts")
@@ -30,4 +30,7 @@ public class Post {
 
     @ManyToOne
     private User user;
+
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 }
