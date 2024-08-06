@@ -1,12 +1,17 @@
 package com.codewithdurgesh.blog.blogappapis.services.impl;
 
+import com.codewithdurgesh.blog.blogappapis.Config.AppConstant;
+import com.codewithdurgesh.blog.blogappapis.entities.Role;
 import com.codewithdurgesh.blog.blogappapis.entities.User;
 import com.codewithdurgesh.blog.blogappapis.exceptions.ResourceNotFoundException;
 import com.codewithdurgesh.blog.blogappapis.payloads.UserDto;
+import com.codewithdurgesh.blog.blogappapis.repositories.RoleRepository;
 import com.codewithdurgesh.blog.blogappapis.repositories.UserRepo;
 import com.codewithdurgesh.blog.blogappapis.services.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -20,6 +25,24 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private RoleRepository roleRepository;
+
+    @Override
+    public UserDto registerNewUser(UserDto userDto) {
+        User user = this.modelMapper.map(userDto, User.class);
+        //encode the password
+        user.setPassword(passwordEncoder.encode(userDto.getPassword()));
+        //roles
+        Role role = roleRepository.findById(AppConstant.NORMAL_USER).get();
+        user.getRoles().add(role);
+        User newUser = userRepo.save(user);
+        return this.modelMapper.map(newUser, UserDto.class);
+    }
 
     @Override
     public UserDto createUser(UserDto userDto) {
