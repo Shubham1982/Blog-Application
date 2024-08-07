@@ -24,7 +24,7 @@ public class SwaggerConfig {
 
     private List<SecurityContext> securityContexts(){
         return Arrays.asList(SecurityContext.builder().securityReferences(sf()).build());
-    }tt
+    }
     private List<SecurityReference> sf(){
         AuthorizationScope scope = new AuthorizationScope("global","accessEverything");
         return Arrays.asList(new SecurityReference("JWT",new AuthorizationScope[]{scope}));
